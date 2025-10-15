@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Alert System - Complete Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .download-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .file-list {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .file-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .safe-file { 
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724; 
+        }
+
+        .harmful-file { 
+            background: linear-gradient(135deg, #f8d7da, #f1b0b7);
+            color: #721c24; 
+        }
+
+        .file-details h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .file-details p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .download-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .download-btn:hover:before {
+            left: 100%;
+        }
+
+        .safe-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .safe-btn:hover {
+            background: linear-gradient(135deg, #218838, #1e7e34);
+            transform: scale(1.05);
+        }
+
+        .harmful-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .harmful-btn:hover {
+            background: linear-gradient(135deg, #c82333, #a71e2a);
+            transform: scale(1.05);
+        }
+
+        .harmful-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .behavior-log {
+            background: #e9ecef;
+            padding: 25px;
+            border-radius: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .behavior-log h3 {
+            margin-bottom: 15px;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .log-entry {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            border-left: 4px solid #dee2e6;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .log-entry:hover {
+            transform: translateX(5px);
+        }
+
+        .log-warning { 
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            color: #856404; 
+            border-left-color: #ffc107;
+        }
+
+        .log-danger { 
+            background: linear-gradient(135deg, #f8d7da, #fab1a0);
+            color: #721c24; 
+            border-left-color: #dc3545;
+        }
+
+        .log-critical { 
+            background: linear-gradient(135deg, #d1ecf1, #74b9ff);
+            color: #0c5460; 
+            border-left-color: #17a2b8;
+        }
+
+        .controls-section {
+            background: #e3f2fd;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .control-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-info { background: #17a2b8; color: white; }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Alert Modal Styles */
+        .alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .alert-modal {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            animation: alertSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes alertSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.7) translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .alert-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            margin: 0 auto 25px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .yellow-alert .alert-icon {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            color: #856404;
+        }
+
+        .orange-alert .alert-icon {
+            background: linear-gradient(135deg, #fd7e14, #f39c12);
+            color: white;
+        }
+
+        .red-alert .alert-icon {
+            background: linear-gradient(135deg, #dc3545, #c0392b);
+            color: white;
+        }
+
+        .alert-title {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .yellow-alert .alert-title { color: #856404; }
+        .orange-alert .alert-title { color: #fd7e14; }
+        .red-alert .alert-title { color: #dc3545; }
+
+        .alert-message {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.7;
+            color: #495057;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .alert-btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: linear-gradient(135deg, #545b62, #343a40);
+            transform: translateY(-3px);
+        }
+
+        .btn-proceed {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-proceed:hover {
+            background: linear-gradient(135deg, #218838, #1e7e34);
+            transform: translateY(-3px);
+        }
+
+        .btn-proceed:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 25px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.1s ease;
+        }
+
+        .yellow-alert .progress-fill { 
+            background: linear-gradient(90deg, #ffc107, #ffeb3b); 
+        }
+        .orange-alert .progress-fill { 
+            background: linear-gradient(90deg, #fd7e14, #f39c12); 
+        }
+        .red-alert .progress-fill { 
+            background: linear-gradient(90deg, #dc3545, #c0392b); 
+        }
+
+        .countdown {
+            font-size: 1em;
+            color: #6c757d;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .header h1 { font-size: 2em; }
+            .stats-container { grid-template-columns: 1fr; }
+            .file-item { flex-direction: column; gap: 15px; text-align: center; }
+            .alert-actions { flex-direction: column; }
+            .controls-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Dynamic Alert System</h1>
+            <p>Advanced Behavioral Security Monitor</p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number" id="totalDownloads">0</div>
+                <div class="stat-label">Total Downloads</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="warningsIssued">0</div>
+                <div class="stat-label">Warnings Issued</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="alertLevel">Safe</div>
+                <div class="stat-label">Current Alert Level</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="riskScore">0</div>
+                <div class="stat-label">Risk Score</div>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2 style="margin-bottom: 20px; color: #2c3e50;">📁 Available Files</h2>
+            <div class="file-list" id="fileList"></div>
+        </div>
+
+        <div class="controls-section">
+            <h3 style="margin-bottom: 10px; color: #1976d2;">🧪 Behavior Testing & Controls</h3>
+            <p style="color: #666; margin-bottom: 15px;">Test different user behavior patterns to see how the alert system responds:</p>
+            <div class="controls-grid">
+                <button class="control-btn btn-success" onclick="simulateUserBehavior('cautious')">👤 Cautious User</button>
+                <button class="control-btn btn-warning" onclick="simulateUserBehavior('risky')">⚠️ Risky User</button>
+                <button class="control-btn btn-danger" onclick="simulateUserBehavior('rapid')">⚡ Rapid Downloads</button>
+                <button class="control-btn btn-danger" onclick="simulateUserBehavior('persistent')">🔥 Persistent Attacker</button>
+                <button class="control-btn btn-info" onclick="exportBehaviorData()">📊 Export Data</button>
+                <button class="control-btn btn-secondary" onclick="resetSystem()">🔄 Reset System</button>
+            </div>
+        </div>
+
+        <div class="behavior-log">
+            <h3>📝 User Behavior Log</h3>
+            <div id="behaviorLog">
+                <div class="log-entry">System initialized - Monitoring user behavior...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div class="alert-overlay" id="alertOverlay">
+        <div class="alert-modal" id="alertModal">
+            <div class="alert-icon" id="alertIcon">⚠️</div>
+            <h2 class="alert-title" id="alertTitle">Security Warning</h2>
+            <div class="alert-message" id="alertMessage">
+                This file may contain harmful content. Are you sure you want to proceed?
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 100%;"></div>
+            </div>
+            <div class="countdown" id="countdown"></div>
+            <div class="alert-actions" id="alertActions">
+                <button class="alert-btn btn-cancel" onclick="cancelDownload()">Cancel Download</button>
+                <button class="alert-btn btn-proceed" id="proceedBtn" onclick="proceedDownload()">Proceed Anyway</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Alert Configuration Class
+        class AlertConfig {
+            constructor() {
+                this.files = [
+                    { name: 'Document.pdf', size: '2.3 MB', type: 'safe', icon: '📄', description: 'Safe document file' },
+                    { name: 'presentation.pptx', size: '5.1 MB', type: 'safe', icon: '📊', description: 'PowerPoint presentation' },
+                    { name: 'image_gallery.zip', size: '12.4 MB', type: 'safe', icon: '🖼️', description: 'Photo archive' },
+                    { name: 'suspicious_file.exe', size: '15.7 MB', type: 'harmful', icon: '⚠️', description: 'Potentially harmful executable' },
+                    { name: 'malware_sample.zip', size: '3.2 MB', type: 'harmful', icon: '🦠', description: 'Suspicious archive file' },
+                    { name: 'trojan_horse.scr', size: '8.9 MB', type: 'harmful', icon: '🐴', description: 'Screen saver with malicious code' },
+                    { name: 'keylogger.dll', size: '2.1 MB', type: 'harmful', icon: '🔑', description: 'Suspicious system library' },
+                    { name: 'backdoor.bat', size: '0.5 MB', type: 'harmful', icon: '🚪', description: 'Batch script with backdoor' }
+                ];
+            }
+
+            getYellowAlert() {
+                return {
+                    level: 'yellow',
+                    icon: '⚠️',
+                    title: 'Security Warning',
+                    message: 'This file has been flagged as potentially harmful. We recommend caution before downloading.',
+                    duration: 10000,
+                    canProceed: true,
+                    className: 'yellow-alert'
+                };
+            }
+
+            getOrangeAlert() {
+                return {
+                    level: 'orange',
+                    icon: '🚨',
+                    title: 'High Risk Detected',
+                    message: 'You previously ignored a security warning. This file poses a significant threat to your system.',
+                    duration: 20000,
+                    canProceed: true,
+                    className: 'orange-alert'
+                };
+            }
+
+            getRedAlert() {
+                return {
+                    level: 'red',
+                    icon: '🛑',
+                    title: 'CRITICAL SECURITY THREAT',
+                    message: 'Multiple security warnings have been ignored. This download has been blocked to protect your system.',
+                    duration: 30000,
+                    canProceed: false,
+                    className: 'red-alert'
+                };
+            }
+
+            getPersonalizedMessage(baseMessage, tracker) {
+                const riskScore = tracker.getRiskScore();
+                const { ignoredWarnings, harmfulDownloads } = tracker.userBehavior;
+
+                let personalizedMessage = baseMessage;
+
+                if (riskScore > 70) {
+                    personalizedMessage += ` Current risk score: ${riskScore}/100 (EXTREMELY HIGH).`;
+                } else if (riskScore > 40) {
+                    personalizedMessage += ` Current risk score: ${riskScore}/100 (HIGH RISK).`;
+                }
+
+                if (ignoredWarnings > 0) {
+                    personalizedMessage += ` You have ignored ${ignoredWarnings} previous warning${ignoredWarnings > 1 ? 's' : ''}.`;
+                }
+
+                return personalizedMessage;
+            }
+        }
+
+        // Behavior Tracker Class
+        class BehaviorTracker {
+            constructor() {
+                this.userBehavior = {
+                    harmfulDownloads: 0,
+                    ignoredWarnings: 0,
+                    totalDownloads: 0,
+                    alertLevel: 'safe',
+                    lastIgnoreTime: null,
+                    behaviorHistory: [],
+                    downloadTimes: [],
+                    patternFlags: {
+                        rapidDownloads: false,
+                        repeatedHarmful: false,
+                        timeBasedSuspicious: false
+                    }
+                };
+                
+                this.thresholds = {
+                    warningLevel: 1,
+                    dangerLevel: 2,
+                    criticalLevel: 3,
+                    rapidDownloadTime: 30,
+                    maxRapidDownloads: 3
+                };
+            }
+
+            trackDownloadAttempt(fileName, fileType, wasBlocked = false) {
+                const timestamp = Date.now();
+                this.userBehavior.downloadTimes.push(timestamp);
+
+                if (!wasBlocked) {
+                    this.userBehavior.totalDownloads++;
+                    if (fileType === 'harmful') {
+                        this.userBehavior.harmfulDownloads++;
+                    }
+                }
+
+                this.analyzeDownloadPatterns();
+                this.updateAlertLevel();
+            }
+
+            trackWarningIgnored(fileName) {
+                this.userBehavior.ignoredWarnings++;
+                this.userBehavior.lastIgnoreTime = Date.now();
+                this.updateAlertLevel();
+            }
+
+            analyzeDownloadPatterns() {
+                this.checkRapidDownloads();
+                this.checkRepeatedHarmfulDownloads();
+            }
+
+            checkRapidDownloads() {
+                const now = Date.now();
+                const recentDownloads = this.userBehavior.downloadTimes.filter(
+                    time => (now - time) < (this.thresholds.rapidDownloadTime * 1000)
+                );
+
+                if (recentDownloads.length >= this.thresholds.maxRapidDownloads) {
+                    this.userBehavior.patternFlags.rapidDownloads = true;
+                    this.logBehavior('🚨 RAPID DOWNLOAD PATTERN: Multiple downloads detected', 'danger');
+                }
+            }
+
+            checkRepeatedHarmfulDownloads() {
+                if (this.userBehavior.harmfulDownloads >= 2) {
+                    this.userBehavior.patternFlags.repeatedHarmful = true;
+                    this.logBehavior('🔄 REPEATED HARMFUL PATTERN: Multiple malicious attempts', 'danger');
+                }
+            }
+
+            updateAlertLevel() {
+                const { ignoredWarnings, patternFlags } = this.userBehavior;
+                let newLevel = 'safe';
+
+                if (ignoredWarnings >= this.thresholds.criticalLevel) {
+                    newLevel = 'critical';
+                } else if (ignoredWarnings >= this.thresholds.dangerLevel) {
+                    newLevel = 'danger';
+                } else if (ignoredWarnings >= this.thresholds.warningLevel) {
+                    newLevel = 'warning';
+                }
+
+                if (patternFlags.rapidDownloads || patternFlags.repeatedHarmful) {
+                    const levels = ['safe', 'warning', 'danger', 'critical'];
+                    const currentIndex = levels.indexOf(newLevel);
+                    newLevel = levels[Math.min(currentIndex + 1, levels.length - 1)];
+                }
+
+                this.userBehavior.alertLevel = newLevel;
+            }
+
+            shouldBlockDownload(fileType) {
+                if (fileType === 'safe') return false;
+                
+                const { alertLevel, ignoredWarnings, patternFlags } = this.userBehavior;
+                const riskScore = this.getRiskScore();
+
+                return alertLevel === 'critical' || riskScore >= 80 || 
+                       (patternFlags.rapidDownloads && ignoredWarnings >= 2);
+            }
+
+            getRiskScore() {
+                const { harmfulDownloads, ignoredWarnings, totalDownloads, patternFlags } = this.userBehavior;
+                
+                let score = 0;
+                score += harmfulDownloads * 20;
+                score += ignoredWarnings * 15;
+                
+                if (patternFlags.rapidDownloads) score += 25;
+                if (patternFlags.repeatedHarmful) score += 30;
+                
+                if (totalDownloads > 0) {
+                    const harmfulRatio = harmfulDownloads / totalDownloads;
+                    score += harmfulRatio * 50;
+                }
+
+                return Math.min(score, 100);
+            }
+
+            detectAdvancedPatterns() {
+                return {
+                    persistentAttacker: this.userBehavior.ignoredWarnings >= 3 && this.userBehavior.harmfulDownloads >= 2,
+                    escalatingThreat: this.userBehavior.harmfulDownloads >= 2,
+                    rapidBehavior: this.userBehavior.patternFlags.rapidDownloads
+                };
+            }
+
+            logBehavior(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const behaviorLog = document.getElementById('behaviorLog');
+                const logElement = document.createElement('div');
+                
+                let logClass = 'log-entry';
+                if (type === 'warning') logClass += ' log-warning';
+                else if (type === 'danger') logClass += ' log-danger';
+                else if (type === 'critical') logClass += ' log-critical';
+                
+                logElement.className = logClass;
+                logElement.textContent = `[${timestamp}] ${message}`;
+                
+                behaviorLog.appendChild(logElement);
+                behaviorLog.scrollTop = behaviorLog.scrollHeight;
+
+                if (behaviorLog.children.length > 15) {
+                    behaviorLog.removeChild(behaviorLog.firstChild);
+                }
+            }
+
+            reset() {
+                this.userBehavior = {
+                    harmfulDownloads: 0,
+                    ignoredWarnings: 0,
+                    totalDownloads: 0,
+                    alertLevel: 'safe',
+                    lastIgnoreTime: null,
+                    behaviorHistory: [],
+                    downloadTimes: [],
+                    patternFlags: {
+                        rapidDownloads: false,
+                        repeatedHarmful: false,
+                        timeBasedSuspicious: false
+                    }
+                };
+            }
+        }
+
+        // Main Dynamic Alert System Class
+        class DynamicAlertSystem {
+            constructor() {
+                this.config = new AlertConfig();
+                this.tracker = new BehaviorTracker();
+                this.currentFile = null;
+                this.alertTimeout = null;
+                this.countdownInterval = null;
+                this.timeLeft = 0;
+                
+                this.init();
+            }
+
+            init() {
+                this.setupFiles();
+                this.updateUI();
+                this.tracker.logBehavior('🔰 Dynamic Alert System initialized');
+            }
+
+            setupFiles() {
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = '';
+
+                this.config.files.forEach(file => {
+                    const isBlocked = this.tracker.shouldBlockDownload(file.type);
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    
+                    fileItem.innerHTML = `
+                        <div class="file-info">
+                            <div class="file-icon ${file.type}-file">${file.icon}</div>
+                            <div class="file-details">
+                                <h3>${file.name}</h3>
+                                <p>${file.description} • ${file.size}</p>
+                            </div>
+                        </div>
+                        <button 
+                            class="download-btn ${file.type}-btn" 
+                            onclick="attemptDownload('${file.name}', '${file.type}')" 
+                            ${isBlocked ? 'disabled' : ''}
+                        >
+                            ${isBlocked ? 'Download Blocked' : 'Download'}
+                        </button>
+                    `;
+                    fileList.appendChild(fileItem);
+                });
+            }
+
+            attemptDownload(fileName, fileType) {
+                this.currentFile = { name: fileName, type: fileType };
+
+                if (this.tracker.shouldBlockDownload(fileType)) {
+                    this.showBlockedAlert();
+                    return;
+                }
+
+                if (fileType === 'safe') {
+                    this.processDownload(fileName, true);
+                } else {
+                    this.showAlert();
+                }
+            }
+
+            showAlert() {
+                const alertLevel = this.tracker.userBehavior.alertLevel;
+                const patterns = this.tracker.detectAdvancedPatterns();
+                let alertConfig;
+
+                if (patterns.persistentAttacker) {
+                    alertConfig = this.config.getRedAlert();
+                    alertConfig.title = 'PERSISTENT THREAT DETECTED';
+                    alertConfig.message = 'Multiple dangerous behavior patterns identified. System protection activated.';
+                } else {
+                    switch (alertLevel) {
+                        case 'warning':
+                            alertConfig = this.config.getYellowAlert();
+                            break;
+                        case 'danger':
+                            alertConfig = this.config.getOrangeAlert();
+                            break;
+                        case 'critical':
+                            alertConfig = this.config.getRedAlert();
+                            break;
+                        default:
+                            alertConfig = this.config.getYellowAlert();
+                    }
+                }
+
+                alertConfig.message = this.config.getPersonalizedMessage(alertConfig.message, this.tracker);
+                this.displayAlert(alertConfig);
+            }
+
+            showBlockedAlert() {
+                const alertConfig = {
+                    level: 'red',
+                    icon: '🚫',
+                    title: 'DOWNLOAD BLOCKED',
+                    message: 'This download has been permanently blocked due to your behavior history.',
+                    duration: 15000,
+                    canProceed: false,
+                    className: 'red-alert'
+                };
+
+                this.displayAlert(alertConfig);
+                this.tracker.trackDownloadAttempt(this.currentFile.name, this.currentFile.type, true);
+            }
+
+            displayAlert(config) {
+                const overlay = document.getElementById('alertOverlay');
+                const modal = document.getElementById('alertModal');
+                const icon = document.getElementById('alertIcon');
+                const title = document.getElementById('alertTitle');
+                const message = document.getElementById('alertMessage');
+                const proceedBtn = document.getElementById('proceedBtn');
+
+                modal.className = `alert-modal ${config.className}`;
+                icon.textContent = config.icon;
+                title.textContent = config.title;
+                message.textContent = config.message;
+                proceedBtn.disabled = !config.canProceed;
+                proceedBtn.style.display = config.canProceed ? 'inline-block' : 'none';
+
+                overlay.style.display = 'flex';
+                this.timeLeft = config.duration;
+                this.startCountdown(config.duration);
+
+                this.alertTimeout = setTimeout(() => {
+                    config.canProceed ? this.cancelDownload() : this.closeAlert();
+                }, config.duration);
+
+                this.tracker.logBehavior(`🚨 ${config.level.toUpperCase()} ALERT: ${config.title}`, 
+                    config.level === 'red' ? 'critical' : 'warning');
+            }
+
+            startCountdown(duration) {
+                const countdown = document.getElementById('countdown');
+                const progressFill = document.getElementById('progressFill');
+                
+                this.countdownInterval = setInterval(() => {
+                    this.timeLeft -= 100;
+                    const percentage = (this.timeLeft / duration) * 100;
+                    const seconds = Math.ceil(this.timeLeft / 1000);
+                    
+                    progressFill.style.width = `${percentage}%`;
+                    countdown.textContent = `Auto-close in ${seconds} seconds`;
+                    
+                    if (this.timeLeft <= 0) {
+                        clearInterval(this.countdownInterval);
+                    }
+                }, 100);
+            }
+
+            cancelDownload() {
+                this.tracker.logBehavior(`❌ Download cancelled: ${this.currentFile.name}`);
+                this.closeAlert();
+            }
+
+            proceedDownload() {
+                this.tracker.trackWarningIgnored(this.currentFile.name);
+                this.processDownload(this.currentFile.name, false);
+                this.closeAlert();
+            }
+
+            processDownload(fileName, isSafe) {
+                this.tracker.trackDownloadAttempt(fileName, isSafe ? 'safe' : 'harmful');
+                
+                const logType = isSafe ? 'info' : 'danger';
+                this.tracker.logBehavior(
+                    `${isSafe ? '✅' : '🚨'} Downloaded: ${fileName} ${isSafe ? '(Safe)' : '(Harmful)'}`, 
+                    logType
+                );
+
+                this.updateUI();
+                this.setupFiles();
+
+                setTimeout(() => {
+                    const statusMsg = isSafe ? 'Safe' : 'Potentially harmful';
+                    const notification = document.createElement('div');
+                    notification.style.cssText = `
+                        position: fixed; top: 20px; right: 20px; 
+                        background: ${isSafe ? '#d4edda' : '#f8d7da'}; 
+                        color: ${isSafe ? '#155724' : '#721c24'};
+                        padding: 15px 20px; border-radius: 10px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                        z-index: 2000; animation: slideIn 0.3s ease;
+                    `;
+                    notification.textContent = `${statusMsg} file "${fileName}" downloaded`;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => notification.remove(), 3000);
+                }, 500);
+            }
+
+            closeAlert() {
+                clearTimeout(this.alertTimeout);
+                clearInterval(this.countdownInterval);
+                document.getElementById('alertOverlay').style.display = 'none';
+            }
+
+            updateUI() {
+                const { totalDownloads, ignoredWarnings, alertLevel } = this.tracker.userBehavior;
+                const riskScore = this.tracker.getRiskScore();
+                
+                document.getElementById('totalDownloads').textContent = totalDownloads;
+                document.getElementById('warningsIssued').textContent = ignoredWarnings;
+                document.getElementById('riskScore').textContent = riskScore;
+                
+                const alertLevelElement = document.getElementById('alertLevel');
+                const levels = {
+                    'safe': '✅ Safe',
+                    'warning': '⚠️ Warning',
+                    'danger': '⚠️ High Risk',
+                    'critical': '🚨 Critical'
+                };
+                alertLevelElement.textContent = levels[alertLevel] || '✅ Safe';
+
+                // Update stat card colors based on risk
+                this.updateStatCardColors(riskScore);
+            }
+
+            updateStatCardColors(riskScore) {
+                const statCards = document.querySelectorAll('.stat-card');
+                let gradient;
+                
+                if (riskScore > 70) {
+                    gradient = 'linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%)';
+                } else if (riskScore > 40) {
+                    gradient = 'linear-gradient(135deg, #ffa726 0%, #ff9800 100%)';
+                } else if (riskScore > 20) {
+                    gradient = 'linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%)';
+                } else {
+                    gradient = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+                }
+                
+                statCards.forEach(card => {
+                    card.style.background = gradient;
+                });
+            }
+
+            reset() {
+                this.tracker.reset();
+                document.getElementById('behaviorLog').innerHTML = 
+                    '<div class="log-entry">System reset - Monitoring user behavior...</div>';
+                this.updateUI();
+                this.setupFiles();
+                this.tracker.logBehavior('🔄 System reset to initial state');
+            }
+        }
+
+        // Application Entry Point
+        let alertSystem;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            alertSystem = new DynamicAlertSystem();
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    const overlay = document.getElementById('alertOverlay');
+                    if (overlay.style.display === 'flex') {
+                        cancelDownload();
+                    }
+                }
+                
+                if (event.ctrlKey && event.key === 'r') {
+                    event.preventDefault();
+                    resetSystem();
+                }
+            });
+
+            // Add animation styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // Global Functions
+        function attemptDownload(fileName, fileType) {
+            if (alertSystem) {
+                alertSystem.attemptDownload(fileName, fileType);
+            }
+        }
+
+        function cancelDownload() {
+            if (alertSystem) {
+                alertSystem.cancelDownload();
+            }
+        }
+
+        function proceedDownload() {
+            if (alertSystem) {
+                alertSystem.proceedDownload();
+            }
+        }
+
+        function resetSystem() {
+            if (confirm('Reset system and clear all behavior data?')) {
+                if (alertSystem) {
+                    alertSystem.reset();
+                }
+            }
+        }
+
+        // Simulation Functions
+        function simulateUserBehavior(pattern) {
+            if (!alertSystem) return;
+            
+            const simulations = {
+                cautious: () => {
+                    alertSystem.tracker.logBehavior('🎭 SIMULATION: Cautious user behavior started');
+                    setTimeout(() => attemptDownload('Document.pdf', 'safe'), 1000);
+                    setTimeout(() => attemptDownload('presentation.pptx', 'safe'), 3000);
+                },
+                
+                risky: () => {
+                    alertSystem.tracker.logBehavior('🎭 SIMULATION: Risky user behavior started');
+                    setTimeout(() => attemptDownload('suspicious_file.exe', 'harmful'), 1000);
+                    setTimeout(() => {
+                        if (document.getElementById('alertOverlay').style.display === 'flex') {
+                            proceedDownload();
+                        }
+                    }, 2000);
+                },
+                
+                rapid: () => {
+                    alertSystem.tracker.logBehavior('🎭 SIMULATION: Rapid download behavior started');
+                    const files = [
+                        {name: 'Document.pdf', type: 'safe'},
+                        {name: 'suspicious_file.exe', type: 'harmful'},
+                        {name: 'malware_sample.zip', type: 'harmful'}
+                    ];
+                    
+                    files.forEach((file, index) => {
+                        setTimeout(() => {
+                            attemptDownload(file.name, file.type);
+                            if (file.type === 'harmful') {
+                                setTimeout(() => {
+                                    if (document.getElementById('alertOverlay').style.display === 'flex') {
+                                        proceedDownload();
+                                    }
+                                }, 500);
+                            }
+                        }, index * 1000);
+                    });
+                },
+                
+                persistent: () => {
+                    alertSystem.tracker.logBehavior('🎭 SIMULATION: Persistent attacker behavior started');
+                    const harmfulFiles = [
+                        'suspicious_file.exe', 'malware_sample.zip', 'trojan_horse.scr', 
+                        'keylogger.dll', 'backdoor.bat'
+                    ];
+                    
+                    harmfulFiles.forEach((file, index) => {
+                        setTimeout(() => {
+                            attemptDownload(file, 'harmful');
+                            setTimeout(() => {
+                                if (document.getElementById('alertOverlay').style.display === 'flex') {
+                                    proceedDownload();
+                                }
+                            }, 1000);
+                        }, index * 2000);
+                    });
+                }
+            };
+
+            if (simulations[pattern]) {
+                simulations[pattern]();
+            }
+        }
+
+        function exportBehaviorData() {
+            if (!alertSystem) return;
+            
+            const data = {
+                timestamp: new Date().toISOString(),
+                userBehavior: alertSystem.tracker.userBehavior,
+                riskScore: alertSystem.tracker.getRiskScore(),
+                patterns: alertSystem.tracker.detectAdvancedPatterns()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `behavior_report_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            alertSystem.tracker.logBehavior('📊 Behavior data exported successfully');
+        }
+    </script>
+</body>
+</html>
